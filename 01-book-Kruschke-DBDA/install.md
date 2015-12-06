@@ -49,8 +49,9 @@ Warning messages:
 
 ### Source
 
-A more tricky was is to install JAGS from source: http://mcmc-jags.sourceforge.net/.
+It is more tricky to install JAGS from source: http://mcmc-jags.sourceforge.net/.
 
-Further nstallation of rjags R package becomes complicated (paths, shared libs, etc).
+Once JAGS is intalled from source (the default configurations),
+further installation of rjags R package is not straight forward (problems with paths, shared libs, etc).
 
 See https://cran.r-project.org/web/packages/rjags/INSTALL.
