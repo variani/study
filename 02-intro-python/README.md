@@ -1,11 +1,11 @@
 
 ## Materials
 
-1. http://heather.cs.ucdavis.edu/%7Ematloff/py.html 
+1. [Fast Lane to Python](http://heather.cs.ucdavis.edu/%7Ematloff/py.html) by Norm Matloff
 
 ## Exercisse
 
 Sources:
 
-* [Fast Lane to Python](https://developers.google.com/edu/python/?hl=en) by Norm Matloff
+* https://developers.google.com/edu/python/?hl=en
 * [Scipy Lecture Notes](http://www.scipy-lectures.org/)
