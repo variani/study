@@ -23,3 +23,7 @@ Mixed models
 * https://kbroman.wordpress.com/2015/11/24/fitting-linear-mixed-models-for-qtl-mapping/ 
     * http://lomereiter.github.io/2015/03/13/reml.html
     * https://github.com/nickFurlotte/pylmm
+
+lme4-specific problem statement
+
+* http://www.scipy-lectures.org/advanced/mathematical_optimization/index.html#constraints
