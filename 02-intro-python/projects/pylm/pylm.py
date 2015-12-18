@@ -20,6 +20,7 @@ class LM:
     
     self.beta_hat = None
     self.y_hat = None
+    self.residuals = None
     
   def fit(self):
     ### estimate model parameters
@@ -27,6 +28,7 @@ class LM:
     self.beta_hat = np.linalg.inv(self.X.transpose().dot(self.X)).dot(self.X.transpose().dot(self.y)) 
   
     self.y_hat = self.X.dot(self.beta_hat)
+    self.residuals = self.y - self.y_hat
       
     self.fitted = True
 
@@ -39,10 +41,18 @@ class LM:
       line_beta = ' -- beta: ' + str(mod.beta_hat.transpose())
       return 'Liner Model (fitted)\n' + line_dim + line_beta
   
-  def plot(self):
+  def plot(self, type = 1):
+    if type == 1:
+      self.plotRes()
+    
+  def plotRes(self):
     fig = plt.figure()
     
-    plt.scatter(self.y, self.y_hat, figure = fig)
+    plt.scatter(self.y_hat, self.residuals, figure = fig)
+    plt.xlabel('Fitted values')
+    plt.ylabel("Residuals")
+    plt.title("Linear Model")
+    plt.axhline(0)
     
     fig.show()
     
