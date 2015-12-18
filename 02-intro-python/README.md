@@ -17,6 +17,10 @@ Sources:
 Linear models (OLS)
 
 * http://alstatr.blogspot.com.es/2015/12/r-and-python-theory-of-linear-least.html
+* [some R code](http://people.tamu.edu/~b-wood/Maximum%20Likelihood/RLesson%203.htm) with LL, var-cov, etc.
+      * another example of [R code](http://www.polsci.ucsb.edu/faculty/glasgow/ps206/ps206_mle.r): 
+        probability functions for LL istead of matrix calculations
+      * [an example](http://www.magesblog.com/2013/03/how-to-use-optim-in-r.html) with optimization in R for OLS 
 
 Mixed models
 
