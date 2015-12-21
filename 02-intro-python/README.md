@@ -31,3 +31,10 @@ Mixed models
 lme4-specific problem statement
 
 * http://www.scipy-lectures.org/advanced/mathematical_optimization/index.html#constraints
+
+### Prob. programming
+
+* Book http://camdavidsonpilon.github.io/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/
+     * GitHub rep https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers
+     * Tutorial for pyMC package http://pymcmc.readthedocs.org/en/latest/tutorial.html
+
