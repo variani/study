@@ -10,3 +10,5 @@ Blog posts
 * http://www.magesblog.com/2015/08/generalised-linear-models-in-r.html
 * http://www.magesblog.com/2015/09/bayesian-regression-models-using-stan.html
 * http://www.magesblog.com/2015/11/hierarchical-loss-reserving-with-stan.html
+
+* http://thinkinator.com/2016/01/12/r-users-will-now-inevitably-become-bayesians/
