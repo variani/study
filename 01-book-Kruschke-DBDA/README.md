@@ -4,6 +4,8 @@ Tools
 
 * http://mc-stan.org/
     * https://github.com/stan-dev
+* JAGS
+      * http://www.johnmyleswhite.com/notebook/2010/08/20/using-jags-in-r-with-the-rjags-package/
 
 magesblog.com
 
