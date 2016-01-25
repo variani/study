@@ -4,8 +4,11 @@ Tools
 
 * http://mc-stan.org/
     * https://github.com/stan-dev
-* JAGS
+* JAGS in R
       * http://www.johnmyleswhite.com/notebook/2010/08/20/using-jags-in-r-with-the-rjags-package/
+* JAGS in python
+      * https://github.com/tmiasko/pyjags
+      * https://github.com/ihrke/pyjags-rpy
 
 magesblog.com
 
