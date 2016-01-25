@@ -5,6 +5,10 @@ Tools
 * http://mc-stan.org/
     * https://github.com/stan-dev
 
+Discussions on which tool to choose?
+
+*  [PyStan vs. PyMC](http://andrewgelman.com/2015/10/15/whats-the-one-thing-you-have-to-know-about-pystan-and-pymc-click-here-to-find-out/) in python
+
 magesblog.com
 
 * http://www.magesblog.com/2015/08/generalised-linear-models-in-r.html
