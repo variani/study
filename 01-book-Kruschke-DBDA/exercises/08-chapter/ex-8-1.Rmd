@@ -10,23 +10,238 @@ output:
 ---
 
 ```{r options, echo = F}
-opts_chunk$set(fig.path = "figures-8-1/", comment = NA, results = 'asis', tidy = F, message = F, warning = F, echo = F)
+opts_chunk$set(fig.path = "figures-8-1/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
 ```
 
-```{r inc, cache = FALSE}
-#
+### Parameters
+
+```{r par}
+dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
 ```
 
-## Source file
+## Include DBDA2 files
 
-```{r src}
+```{r inc, cache = F}
+library(coda)
+```
+
+## Example `Jags-Ydich-Xnom1subj-MbernBeta-Example.R`
+
+See code in the `Jags-Ydich-Xnom1subj-MbernBeta-Example.R` file.
+
+### Source files
+
+```{r src, echo = F, results = 'hide'}
 dir0 <- getwd()
 dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
-
+f <- "Jags-Ydich-Xnom1subj-MbernBeta.R"
 
 setwd(dir)
-source("Jags-Ydich-Xnom1subj-MbernBeta-Example.R")
+source(f)
 setwd(dir0)
+
+# for plotting in Rmd by diagMCMC function
+openGraph <- function(...) return(invisible())
 ```
+
+Sourced files: ``r paste(f, collapse = ", ")``.
+
+### Parameters
+
+```{r par1}
+fn <- "Jags-Ydich-Xnom1subj-MbernBeta-" 
+
+nsteps <- 10000
+```
+
+### Read data
+
+```{r dat}
+dat <- read.csv(file.path(dir, "z15N50.csv"))
+str(dat)
+```
+
+```{r dat_tab}
+table(dat$y)
+```
+
+### MCMC samples
+
+```{r mcmc, results = 'hide', cache = T}
+myData <- dat
+out <- genMCMC(data = myData, numSavedSteps = nsteps, saveName = fn)
+```
+
+```{r mcmc_sum}
+summary(out)
+```
+
+### Plot diagnostics
+
+```{r diagMCMC, cache = T}
+diagMCMC(out)
+```
+
+### Plot posteriors
+
+```{r post, cache = T}
+plotMCMC(out, data = myData)
+```
+
+## Example `Jags-Ydich-XnomSsubj-MbernBeta-Example.R`
+
+See code in the `Jags-Ydich-XnomSsubj-MbernBeta-Example.R` file.
+
+### Source files
+
+```{r src2, echo = F, results = 'hide'}
+dir0 <- getwd()
+f <- "Jags-Ydich-XnomSsubj-MbernBeta.R"
+
+setwd(dir)
+source(f)
+setwd(dir0)
+
+# for plotting in Rmd by diagMCMC function
+openGraph <- function(...) return(invisible())
+```
+
+Sourced files: ``r paste(f, collapse = ", ")``.
+
+### Parameters
+
+```{r par2}
+fn <- "Jags-Ydich-XnomSsubj-MbernBeta-"
+
+nsteps <- 50000
+```
+
+### Read data
+
+```{r dat2}
+dat <- read.csv(file.path(dir, "z6N8z2N7.csv"))
+str(dat)
+```
+
+### MCMC samples
+
+```{r mcmc2, results = 'hide', cache = T}
+myData <- dat
+out <- genMCMC(data = myData, numSavedSteps = nsteps, saveName = fn)
+```
+
+```{r mcmc_sum2}
+summary(out)
+```
+
+### Plot diagnostics
+
+```{r diagMCMC2, cache = T}
+l_ply(varnames(out), function(p) {
+  diagMCMC(out, p)
+})
+```
+
+### Plot posteriors
+
+```{r post2, cache = T}
+plotMCMC(out, data = myData, compVal = NULL , compValDiff = 0.0, ropeDiff = c(-0.05, 0.05))
+```
+
+## Exercise 8.1: two subjets with different sample size
+
+### Read data
+
+```{r dat3}
+dat <- read.csv(file.path(dir, "z6N8z2N7.csv"))
+
+# remove some samples from `dat` for the Subject #2
+dat <- rbind(dat[1:8, ], dat[1:8, ], dat[1:8, ], dat[1:8, ], dat[1:8, ],
+  dat[9:15, ])
+
+str(dat)
+table(dat$s)
+```
+
+### MCMC samples
+
+```{r mcmc3, results = 'hide', cache = T}
+myData <- dat 
+out <- genMCMC(data = myData, numSavedSteps = nsteps, saveName = fn)
+```
+
+```{r mcmc_sum3}
+summary(out) 
+```
+
+### Plot diagnostics
+
+```{r diagMCMC3, cache = T}
+l_ply(varnames(out), function(p) {
+  diagMCMC(out, p) 
+})
+```
+
+### Plot posteriors
+
+```{r post3, cache = T}
+plotMCMC(out, data = myData, compVal = NULL , compValDiff = 0.0, ropeDiff = c(-0.05, 0.05)) 
+```
+
+### Conclusions
+
+More samples for the Subject #1 improves estimation of the theta 1 parameter,
+as well as estimation of the difference between thetas 1 and 2.
+
+In principle, a better estimation of theta 2 is not expected, as the number of samples remained the same in the Example.
+There is also no the shrinkage effect, because the model is not hierachical.
+
+## Exercise 8.1: three subjets with different sample size
+
+### Read data
+
+Use the same data set given in the Solutions.
+
+```{r dat4}
+# remove some samples from `dat` for the Subject #2
+dat <- data.frame(y = c( rep(1,9), rep(0,3), rep(1,45), rep(0,15), rep(1,3),rep(0,9)),
+  s = c(rep("A",12), rep("B",60), rep("C",12)))
+
+str(dat)
+table(dat$s)
+```
+
+### MCMC samples
+
+```{r mcmc4, results = 'hide', cache = T}
+myData <- dat 
+out <- genMCMC(data = myData, numSavedSteps = nsteps, saveName = fn)
+```
+
+```{r mcmc_sum4}
+summary(out) 
+```
+
+### Plot diagnostics
+
+```{r diagMCMC4, cache = T}
+l_ply(varnames(out), function(p) {
+  diagMCMC(out, p) 
+})
+```
+
+### Plot posteriors
+
+```{r post4, cache = T}
+plotMCMC(out, data = myData, compVal = NULL , compValDiff = 0.0, ropeDiff = c(-0.05, 0.05)) 
+```
+
+### Conclusions
+
+The zero difference between the thetas 1 and 2 is demonstrated because of two factors: 
+close values of the estimated thetas;
+and the large samples size for the Subject 2.
+
+The contrary conclusion non-zero difference can be done for the Subjects 2 and 3.
 
 
