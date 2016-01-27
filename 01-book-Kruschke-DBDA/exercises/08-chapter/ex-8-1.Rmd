@@ -1,0 +1,32 @@
+---
+title: "Ex. 8.1"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-8-1/", comment = NA, results = 'asis', tidy = F, message = F, warning = F, echo = F)
+```
+
+```{r inc, cache = FALSE}
+#
+```
+
+## Source file
+
+```{r src}
+dir0 <- getwd()
+dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
+
+
+setwd(dir)
+source("Jags-Ydich-Xnom1subj-MbernBeta-Example.R")
+setwd(dir0)
+```
+
+
