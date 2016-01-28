@@ -1,0 +1,98 @@
+---
+title: "Model, Bernoulli distribution"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-model/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
+```
+
+### Parameters
+
+```{r par}
+nsteps <- 5000
+```
+
+## Include
+
+```{r inc, cache = F}
+library(rjags)
+library(coda)
+```
+
+## Data
+
+```{r dat}
+dat <- data.frame(y = c( rep(1,9), rep(0,3), rep(1,45), rep(0,15), rep(1,3),rep(0,9)),
+  s = c(rep("A",12), rep("B",60), rep("C",12)))
+
+str(dat)
+table(dat$s)
+```
+
+## Model
+
+```{r model, results = "hide", cache = T}
+data <- dat
+
+y <- data$y
+s <- as.numeric(data$s)
+
+Ntotal <- length(y)
+Nsubj <- length(unique(s))
+
+# Data list to be passed to JAGS
+dataList = list(y = y, s = s, Ntotal = Ntotal, Nsubj = Nsubj)
+
+# The model string written in the JAGS language
+model <- "model {
+  for(i in 1:Ntotal) {
+    y[i] ~ dbern( theta[s[i]] )
+  }
+  
+  for(sIdx in 1:Nsubj) {
+    theta[sIdx] ~ dbeta(2, 2)
+  }
+}
+"
+
+numSavedSteps <- nsteps
+
+parameters <- c("theta")     # The parameters to be monitored
+adaptSteps <- 500            # Number of steps to adapt the samplers
+burnInSteps <- 500           # Number of steps to burn-in the chains
+nChains <- 4                 # nChains should be 2 or more for diagnostics 
+
+thinSteps <- 1
+nIter <- ceiling((numSavedSteps * thinSteps) / nChains)
+
+# Create, initialize, and adapt the model:
+jagsModel <- jags.model(textConnection(model), data = dataList, 
+  n.chains = nChains, n.adapt = adaptSteps)
+  
+# Burn-in:
+update( jagsModel, n.iter = burnInSteps)
+
+# The saved MCMC chain:
+samples = coda.samples(jagsModel, variable.names = parameters, 
+  n.iter = nIter, thin = thinSteps)
+
+# resulting codaSamples object has these indices: 
+#   codaSamples[[ chainIdx ]][ stepIdx , paramIdx ]
+```
+
+## Extract summaries
+
+### Summary of coda samples
+
+```{r sam_sum}
+summary(samples)
+```
+
+
