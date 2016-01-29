@@ -24,6 +24,8 @@ nsteps <- 5000
 ```{r inc, cache = F}
 library(rjags)
 library(coda)
+
+library(BayesianFirstAid)
 ```
 
 ## Data
@@ -77,10 +79,10 @@ jagsModel <- jags.model(textConnection(model), data = dataList,
   n.chains = nChains, n.adapt = adaptSteps)
   
 # Burn-in:
-update( jagsModel, n.iter = burnInSteps)
+update(jagsModel, n.iter = burnInSteps)
 
 # The saved MCMC chain:
-samples = coda.samples(jagsModel, variable.names = parameters, 
+samples <- coda.samples(jagsModel, variable.names = parameters, 
   n.iter = nIter, thin = thinSteps)
 
 # resulting codaSamples object has these indices: 
@@ -95,4 +97,12 @@ samples = coda.samples(jagsModel, variable.names = parameters,
 summary(samples)
 ```
 
+### Plot posteriors
+
+```{r plot_post}
+for(p in 1:3) {
+  v <- as.numeric(laply(samples, function(x, par) as.vector(x[, par]), par = p))
+  BayesianFirstAid:::plotPost(v, xlim = c(0, 1), main = paste("theta", p))
+}  
+```
 

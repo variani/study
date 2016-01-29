@@ -17,6 +17,8 @@ nsteps <- 5000
 ```r
 library(rjags)
 library(coda)
+
+library(BayesianFirstAid)
 ```
 
 ## Data
@@ -87,10 +89,10 @@ jagsModel <- jags.model(textConnection(model), data = dataList,
   n.chains = nChains, n.adapt = adaptSteps)
   
 # Burn-in:
-update( jagsModel, n.iter = burnInSteps)
+update(jagsModel, n.iter = burnInSteps)
 
 # The saved MCMC chain:
-samples = coda.samples(jagsModel, variable.names = parameters, 
+samples <- coda.samples(jagsModel, variable.names = parameters, 
   n.iter = nIter, thin = thinSteps)
 
 # resulting codaSamples object has these indices: 
@@ -117,16 +119,27 @@ Sample size per chain = 1250
    plus standard error of the mean:
 
            Mean      SD  Naive SE Time-series SE
-theta[1] 0.6893 0.11117 0.0015721      0.0015523
-theta[2] 0.7343 0.05451 0.0007708      0.0007611
-theta[3] 0.3121 0.11120 0.0015726      0.0015629
+theta[1] 0.6833 0.11200 0.0015839       0.001584
+theta[2] 0.7369 0.05375 0.0007601       0.000757
+theta[3] 0.3125 0.11225 0.0015875       0.001477
 
 2. Quantiles for each variable:
 
            2.5%    25%    50%    75%  97.5%
-theta[1] 0.4492 0.6169 0.6974 0.7723 0.8786
-theta[2] 0.6228 0.6990 0.7377 0.7723 0.8320
-theta[3] 0.1166 0.2296 0.3069 0.3847 0.5462
+theta[1] 0.4493 0.6092 0.6923 0.7668 0.8789
+theta[2] 0.6261 0.7026 0.7394 0.7735 0.8371
+theta[3] 0.1194 0.2310 0.3053 0.3889 0.5428
 ```
 
+### Plot posteriors
+
+
+```r
+for(p in 1:3) {
+  v <- as.numeric(laply(samples, function(x, par) as.vector(x[, par]), par = p))
+  BayesianFirstAid:::plotPost(v, xlim = c(0, 1), main = paste("theta", p))
+}  
+```
+
+![](figures-model/plot_post-1.png) ![](figures-model/plot_post-2.png) ![](figures-model/plot_post-3.png) 
 

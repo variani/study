@@ -1,0 +1,177 @@
+---
+title: "Ex. 9.1"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-9-1/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
+```
+
+### Parameters
+
+```{r par}
+dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
+```
+
+## Include DBDA2 files
+
+```{r inc, cache = F}
+library(coda)
+
+library(stats) # `aggregate` function
+library(graphics) # `par` function
+```
+
+### Source files
+
+```{r src, echo = F, results = 'hide'}
+dir0 <- getwd()
+dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
+f <- "DBDA2E-utilities.R"
+
+setwd(dir)
+source(f)
+setwd(dir0)
+
+# for plotting in Rmd by diagMCMC function
+openGraph <- function(...) return(invisible())
+```
+
+Sourced files: ``r paste(f, collapse = ", ")``.
+
+
+## Example `Jags-Ydich-XnomSsubj-MbinomBetaOmegaKappa-Example.R`
+
+See code in the `Jags-Ydich-XnomSsubj-MbinomBetaOmegaKappa-Example.R` file.
+
+### Source files
+
+```{r src2, echo = F, results = 'hide'}
+dir0 <- getwd()
+dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
+f <- "Jags-Ydich-XnomSsubj-MbinomBetaOmegaKappa.R"
+
+setwd(dir)
+source(f)
+setwd(dir0)
+
+# for plotting in Rmd by diagMCMC function
+openGraph <- function(...) return(invisible())
+```
+
+Sourced files: ``r paste(f, collapse = ", ")``.
+
+### Parameters
+
+```{r par1}
+sName <- "s"
+yName <- "y"
+fn <- "Jags-Ydich-XnomSsubj-MbernBetaOmegaKappa-"
+ 
+nsteps <- 20000
+```
+
+### Data
+
+Read data:
+
+```{r dat}
+dat <- read.csv(file.path(dir, "TherapeuticTouchData.csv"))
+str(dat)
+```
+
+Create a data list for JAGS:
+
+```{r dat_list}
+y <- dat$y
+s <- as.numeric(dat$s) # ensures consecutive integer levels
+
+z <- aggregate(y, by = list(s), FUN = sum)$x
+N <- aggregate(rep(1,length(y)), by = list(s), FUN = sum)$x
+Nsubj <- length(unique(s))
+
+dataList <- list(z = z, N = N, Nsubj = Nsubj)
+```  
+
+Print `dataList`:
+
+```{r dataList}
+dataList
+```
+  
+### MCMC chain  
+
+Generate the MCMC chain:
+
+```{r mcmc, results = 'hide', cache = TRUE}
+myData <- dat
+out <- genMCMC(data = myData, sName = sName, yName=yName,
+  numSavedSteps = nsteps, saveName = fn, thinSteps = 10)
+```
+
+### Plot diagnostics
+
+Display diagnostics of chain, for specified parameters:
+
+```{r diag, cache = T}
+pnames <- varnames(out)
+for(p in pnames[c(1:2, length(pnames) - 1, length(pnames))]) { 
+  diagMCMC(out, p)
+}
+```  
+  
+### Plot posteriors
+  
+```{r post, cache = T}
+plotMCMC(out, data = myData, sName = sName, yName = yName, 
+  compVal = 0.5 , #rope=c(0.45,0.55) , # Therapeutic touch
+  diffIdVec = c(1, 14, 28),              # Therapeutic touch
+  compValDiff = 0.0)
+```  
+  
+## Exercise 9.1
+
+```{r kappa_distr_comp}
+gammaShRaFromMeanSD(1, 10)
+gammaShRaFromModeSD(1, 10)
+```
+
+```{r plot_kappa_distr_comp}
+xp <- seq(0, 100, by = 0.5)
+
+plot(xp, dgamma(xp, 1.105125, 0.1051249), t = 'l')
+lines(xp, dgamma(xp, 0.01, 0.01), col = 'red')
+
+xp <- seq(0.1, 75, by = 0.5)
+
+plot(xp, dgamma(xp, 1.105125, 0.1051249), t = 'l', main = "Between 0.1 and 75: mode-based dominates")
+lines(xp, dgamma(xp, 0.01, 0.01), col = 'red')
+
+xp <- seq(0, 0.1, by = 0.5)
+
+plot(xp, dgamma(xp, 1.105125, 0.1051249), t = 'l', main = "Between 0 and 0.1: mean-based dominates")
+lines(xp, dgamma(xp, 0.01, 0.01), col = 'red')
+
+
+xp <- seq(75, 100, by = 0.5)
+
+plot(xp, dgamma(xp, 1.105125, 0.1051249), t = 'l', main = "Between 75 and 100: mean-based dominates")
+lines(xp, dgamma(xp, 0.01, 0.01), col = 'red')
+```  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
