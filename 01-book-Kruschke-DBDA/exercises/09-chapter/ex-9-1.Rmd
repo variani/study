@@ -19,7 +19,7 @@ opts_chunk$set(fig.path = "figures-9-1/", comment = NA, results = 'markup', tidy
 dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
 ```
 
-## Include DBDA2 files
+## Include 
 
 ```{r inc, cache = F}
 library(coda)
@@ -28,54 +28,15 @@ library(stats) # `aggregate` function
 library(graphics) # `par` function
 ```
 
-### Source files
+### Include `
 
-```{r src, echo = F, results = 'hide'}
-dir0 <- getwd()
-dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
-f <- "DBDA2E-utilities.R"
-
-setwd(dir)
-source(f)
-setwd(dir0)
-
-# for plotting in Rmd by diagMCMC function
-openGraph <- function(...) return(invisible())
+```{r src, cache = F}
+load_all("~/git/variani/dbda/")
 ```
-
-Sourced files: ``r paste(f, collapse = ", ")``.
-
 
 ## Example `Jags-Ydich-XnomSsubj-MbinomBetaOmegaKappa-Example.R`
 
 See code in the `Jags-Ydich-XnomSsubj-MbinomBetaOmegaKappa-Example.R` file.
-
-### Source files
-
-```{r src2, echo = F, results = 'hide'}
-dir0 <- getwd()
-dir <- "~/git/variani/study/01-book-Kruschke-DBDA/doc/programs/DBDA2Eprograms"
-f <- "Jags-Ydich-XnomSsubj-MbinomBetaOmegaKappa.R"
-
-setwd(dir)
-source(f)
-setwd(dir0)
-
-# for plotting in Rmd by diagMCMC function
-openGraph <- function(...) return(invisible())
-```
-
-Sourced files: ``r paste(f, collapse = ", ")``.
-
-### Parameters
-
-```{r par1}
-sName <- "s"
-yName <- "y"
-fn <- "Jags-Ydich-XnomSsubj-MbernBetaOmegaKappa-"
- 
-nsteps <- 20000
-```
 
 ### Data
 
@@ -105,14 +66,40 @@ Print `dataList`:
 dataList
 ```
   
+### Model  
+
+```{r mod1}
+JagsYdichXnomSsubjMbernBetaOmegaKapp <- function()
+{
+  out <- list()
+  
+  # Read The data file:
+  out$myData = read.csv(system.file("data", "TherapeuticTouchData.csv", package = "dbda"))
+  out$yName = "y" # column name for 0,1 values
+  out$sName = "s" # column name for subject ID
+  # Optional: Specify filename root and graphical format for saving output.
+  # Otherwise specify as NULL or leave saveName and saveType arguments 
+  # out of function calls.
+  out$fileNameRoot = "Jags-Ydich-XnomSsubj-MbernBetaOmegaKappa-" 
+  out$graphFileType = "eps"
+  
+  out$numSavedSteps = 20000
+  out$thinSteps = 10
+  
+  oldClass(out) <- "JagsYdichXnomSsubjMbernBetaOmegaKapp"
+  return(out)
+}
+
+mod1 <- JagsYdichXnomSsubjMbernBetaOmegaKapp()
+```
+  
 ### MCMC chain  
 
 Generate the MCMC chain:
 
 ```{r mcmc, results = 'hide', cache = TRUE}
-myData <- dat
-out <- genMCMC(data = myData, sName = sName, yName=yName,
-  numSavedSteps = nsteps, saveName = fn, thinSteps = 10)
+out <- genMCMC(mod1, data = mod1$myData, sName = mod1$sName, yName = mod1$yName, 
+  numSavedSteps = mod1$numSavedSteps, saveName = mod1$fileNameRoot, thinSteps = mod1$thinSteps)
 ```
 
 ### Plot diagnostics
@@ -129,7 +116,7 @@ for(p in pnames[c(1:2, length(pnames) - 1, length(pnames))]) {
 ### Plot posteriors
   
 ```{r post, cache = T}
-plotMCMC(out, data = myData, sName = sName, yName = yName, 
+plotMCMC(mod1, out, data = mod1$myData, sName = mod1$sName, yName = mod1$yName, 
   compVal = 0.5 , #rope=c(0.45,0.55) , # Therapeutic touch
   diffIdVec = c(1, 14, 28),              # Therapeutic touch
   compValDiff = 0.0)
@@ -165,7 +152,27 @@ plot(xp, dgamma(xp, 1.105125, 0.1051249), t = 'l', main = "Between 75 and 100: m
 lines(xp, dgamma(xp, 0.01, 0.01), col = 'red')
 ```  
   
+### Update the model `mod1`
+
+#### MCMC chain  
+
+Generate the MCMC chain:
+
+```{r mcmc2, results = 'hide', cache = TRUE}
+out2 <- genMCMC(mod1, data = mod1$myData, sName = mod1$sName, yName = mod1$yName, 
+  numSavedSteps = mod1$numSavedSteps, saveName = mod1$fileNameRoot, thinSteps = mod1$thinSteps,
+   kappaDist = "Mode1")
+```
+
+#### Plot posteriors
   
+```{r post2, cache = T}
+plotMCMC(mod1, out2, data = mod1$myData, sName = mod1$sName, yName = mod1$yName, 
+  compVal = 0.5 , #rope=c(0.45,0.55) , # Therapeutic touch
+  diffIdVec = c(1, 14, 28),              # Therapeutic touch
+  compValDiff = 0.0)
+```           
+                      
   
   
   
