@@ -28,7 +28,7 @@ library(stats) # `aggregate` function
 library(graphics) # `par` function
 ```
 
-### Include `
+### Include `dbda`
 
 ```{r src, cache = F}
 load_all("~/git/variani/dbda/")
@@ -173,12 +173,175 @@ plotMCMC(mod1, out2, data = mod1$myData, sName = mod1$sName, yName = mod1$yName,
   compValDiff = 0.0)
 ```           
                       
+#### Conclusions
+
+Exercise 9.1.D: The prior on `kappa` with `mean = 1` results in a wider range of posterior values,
+because `> 75` `kappa` values are favored in this case (in comparison with `mode = 1`)
+
+When `kappa` is large, the effect of shrinkage is greater. 
+
+## Exercise 9.2  
   
+Sample from the priors without actual data:
+
+```{r mcmc3, results = 'hide', cache = TRUE}
+out3 <- genMCMC(mod1, data = mod1$myData, sName = mod1$sName, yName = mod1$yName, 
+  numSavedSteps = 1000, saveName = mod1$fileNameRoot, thinSteps = mod1$thinSteps,
+   kappaDist = "Mean1", dataList = FALSE)
+```  
   
+```{r mcmc4, results = 'hide', cache = TRUE}
+out4 <- genMCMC(mod1, data = mod1$myData, sName = mod1$sName, yName = mod1$yName, 
+  numSavedSteps = 1000, saveName = mod1$fileNameRoot, thinSteps = mod1$thinSteps,
+   kappaDist = "Mode1", dataList = FALSE)
+```  
+
+```{r post3, cache = T}
+plotMCMC(mod1, out3, data = mod1$myData, sName = mod1$sName, yName = mod1$yName,
+  diffIdVec = c(1, 14, 28)) 
+```          
   
+```{r post4, cache = T}
+plotMCMC(mod1, out4, data = mod1$myData, sName = mod1$sName, yName = mod1$yName,
+  diffIdVec = c(1, 14, 28)) 
+```            
+
+### Conclusions
+
+Exercise 9.2.A: Extreme values of `theta` (around 0 or 1) are possible when `kappa` is extremely small.
+When the prior is `mode = 1` there is not enough extreme values from sampling of `kappa`.
+That seems to explain "rounded shoulders" in ditribution of individual `theta` (instead of uniform).
+
+Exercise 9.2.B: The prior `mean = 1` fits better to the needs:
+
+* uniform priors on individual `theta`'s;
+* as broad a prior as possible on the difference of `theta`'s. 
+
+
+## Exercise 9.3
+
+Data simulation process is copied from [pdf](file:///home/andrey/Downloads/Kruschke-DBDA2E-ExerciseSolutions.pdf).
+
+```{r data_sim}
+headsTails = c( rep(1,30),rep(0,100-30),
+  rep(1,40),rep(0,100-40),
+  rep(1,50),rep(0,100-50),
+  rep(1,60),rep(0,100-60),
+  rep(1,70),rep(0,100-70) )
+
+subjID = factor( c( rep("A",100),
+  rep("B",100),
+  rep("C",100),
+  rep("D",100),
+  rep("E",100) ) )
+
+myData = data.frame( y=headsTails , s=subjID )
+```
+
+### MCMC samples 
+
+```{r mcmc5, results = 'hide', cache = TRUE}
+out5 <- genMCMC(mod1, data = myData, sName = "s", yName = "y", 
+  numSavedSteps = mod1$numSavedSteps, saveName = mod1$fileNameRoot, thinSteps = mod1$thinSteps)
+```
+
+The summary output shows the effect of shinkage.
+
+```{r sum_mcmc5, cache = TRUE}
+summary(out5)
+```
+
+
+### MCMC samples (uniform prior)
+
+```{r mcmc6, results = 'hide', cache = TRUE}
+out6 <- genMCMC(mod1, data = myData, sName = "s", yName = "y", 
+  numSavedSteps = mod1$numSavedSteps, saveName = mod1$fileNameRoot, thinSteps = mod1$thinSteps,
+  kappaDist = "Uniform")
+```
+
+```{r sum_mcmc6, cache = TRUE}
+summary(out6)
+```
+
+
+### Conclusions
+
+The MLE estimates does not use the information from priors.
+In the case of the Bayesian model, the priors of the top level parameters (`omega` and `kappa`) are introduced,
+and the individual groups can influence the estimation of these parameters.
+
+The effect of uniform prior on `kappa` gives a stronger shrinkage.
+For example, posterior on `theta` goes from `0.22023`  to `0.3315`.
+
+## Exercise 9.4
+
+### Create a model
+
+
+```{r mod2}
+JagsYdichXnomSsubjMbinomBetaOmegaKappa <- function()
+{
+  out <- list()
   
+  # Read The data file:
+  out$myData = read.csv(system.file("data", "TherapeuticTouchData.csv", package = "dbda"))
+  out$yName = "y" # column name for 0,1 values
+  out$sName = "s" # column name for subject ID
+  # Optional: Specify filename root and graphical format for saving output.
+  # Otherwise specify as NULL or leave saveName and saveType arguments 
+  # out of function calls.
+  out$fileNameRoot = "Jags-Ydich-XnomSsubj-MbinomBetaOmegaKappa-" 
+  out$graphFileType = "eps"
   
+  out$numSavedSteps = 5000
+  out$thinSteps = 10
   
+  oldClass(out) <- "JagsYdichXnomSsubjMbinomBetaOmegaKappa"
+  return(out)
+}
+
+mod2 <- JagsYdichXnomSsubjMbinomBetaOmegaKappa()
+```
   
-  
-  
+
+### `runjags` & 3 chains
+
+```{r mcmc7, results = 'hide', cache = TRUE}
+t1 <- system.time({
+  out7 <- genMCMC(mod2, data = mod2$myData, sName = mod2$sName, yName = mod2$yName, 
+    numSavedSteps = mod2$numSavedSteps, saveName = mod2$fileNameRoot, thinSteps = mod2$thinSteps,
+    runjagsMethod = "parallel", useRunjags = TRUE, nChains = 3)  
+})
+``` 
+
+Time:
+
+```{r t1}
+t1
+```
+
+```{r diag_out7}
+diagMCMC(out7, "omega")
+```
+
+
+### `rjags` & 3 chains
+
+```{r mcmc8, results = 'hide', cache = TRUE}
+t2 <- system.time({
+  out8 <- genMCMC(mod2, data = mod2$myData, sName = mod2$sName, yName = mod2$yName, 
+    numSavedSteps = mod2$numSavedSteps, saveName = mod2$fileNameRoot, thinSteps = mod2$thinSteps,
+    useRunjags = FALSE, nChains = 3)
+})
+``` 
+
+Time:
+
+```{r t2}
+t2
+```
+
+```{r diag_out8}
+diagMCMC(out8, "omega")
+```
