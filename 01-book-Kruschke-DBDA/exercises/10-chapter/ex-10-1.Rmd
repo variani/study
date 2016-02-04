@@ -1,0 +1,77 @@
+---
+title: "Ex. 10.1"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-10-1/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
+```
+
+## Include 
+
+### Include `dbda`
+
+```{r src, cache = F}
+load_all("~/git/variani/dbda/")
+```
+
+## Exercise 10.1
+
+Functions:
+
+```{r pD}
+pD <- function(z, N, a, b) exp(lbeta(z + a, N - z + b) - lbeta(a, b))
+```
+
+### Part A
+
+```{r 10_1_A}
+z <- 7
+N <- 10
+
+w1 <- 0.25
+w2 <- 0.75
+k <- 6
+
+a1 <- w1 * (k - 2) + 1
+b1 <- (1 - w1) * (k - 2) + 1
+
+a2 <- w2 * (k - 2) + 1
+b2 <- (1 - w2) * (k - 2) + 1
+
+(pD1 <- pD(z, N, a1, b1))
+(pD2 <- pD(z, N, a2, b2))
+
+(BF <- pD2 / pD1)
+```
+
+```{r 10_1_B}
+z <- 7
+N <- 10
+
+w1 <- 0.25
+w2 <- 0.75
+k <- 202
+
+a1 <- w1 * (k - 2) + 1
+b1 <- (1 - w1) * (k - 2) + 1
+
+a2 <- w2 * (k - 2) + 1
+b2 <- (1 - w2) * (k - 2) + 1
+
+(pD1 <- pD(z, N, a1, b1))
+(pD2 <- pD(z, N, a2, b2))
+
+(BF <- pD2 / pD1)
+```
+
+### Conclusion (Part C)
+
+In the latter case, the priors show more certanty on whether the two factories are biased.
+Hence, a small amount of data (N = 10) favours the second model more.
