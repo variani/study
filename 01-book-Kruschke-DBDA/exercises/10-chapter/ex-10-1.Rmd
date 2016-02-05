@@ -48,7 +48,10 @@ b2 <- (1 - w2) * (k - 2) + 1
 (pD1 <- pD(z, N, a1, b1))
 (pD2 <- pD(z, N, a2, b2))
 
-(BF <- pD2 / pD1)
+(BF <- pD1 / pD2)
+
+(p1 <- BF/(BF+1))
+(p2 <- 1 - p1)
 ```
 
 ```{r 10_1_B}
@@ -68,10 +71,245 @@ b2 <- (1 - w2) * (k - 2) + 1
 (pD1 <- pD(z, N, a1, b1))
 (pD2 <- pD(z, N, a2, b2))
 
-(BF <- pD2 / pD1)
+(BF <- pD1 / pD2)
+
+(p1 <- BF/(BF+1))
+(p2 <- 1 - p1)
 ```
 
 ### Conclusion (Part C)
 
 In the latter case, the priors show more certanty on whether the two factories are biased.
 Hence, a small amount of data (N = 10) favours the second model more.
+
+## Exercise 10.2
+
+```{r mod}
+JagsYdichXnom1subjMbernBetaModelComp <- function()
+{
+  out <- list()
+  
+  oldClass(out) <- "JagsYdichXnom1subjMbernBetaModelComp"
+  return(out)
+}
+
+mod <- JagsYdichXnom1subjMbernBetaModelComp()
+```
+
+### Part A
+
+Data:
+
+```{r data_A}
+N = 9
+z = 6
+y = c( rep(0,N-z) , rep(1,z) )
+
+dataList = list(y = y , N = N )    
+```
+
+#### MCMC samples
+
+```{r mcmc_A, results = 'hide', cache = T}
+out <- genMCMC(mod, dataList = dataList)
+```
+
+#### Diagnostics
+
+```{r diag_A, cache = T}
+pnames <- varnames(out)
+for(p in pnames) { 
+  diagMCMC(out, p)
+}
+```
+
+#### Priors
+
+```{r prior_A, results = 'hide', cache = T}
+dataList0 <- dataList
+dataList0$y <- NULL
+
+out0 <- genMCMC(mod, dataList = dataList0)
+
+plotMCMC(mod, out0)
+```
+
+#### Posteriors
+
+```{r post_A, cache = T}
+plotMCMC(mod, out)
+```
+
+### Part B
+
+```{r post_B, cache = T}
+plotPost(as.matrix(out, chains = TRUE)[, "theta"])
+```
+
+The distribution is left-skewed because of the other model with `omega = 0.25`.
+
+
+### Part C
+
+```{r data_C}
+N = 10
+z = 7
+y = c( rep(0,N-z) , rep(1,z) )
+
+dataList = list(y = y , N = N )    
+```
+
+#### kappa 6
+
+```{r kappa_6, results = 'hide', cache = T}
+out1 <- genMCMC(mod, dataList, kappa = 6)
+
+plotMCMC(mod, out1)
+```
+
+
+```{r sum_kappa_6, cache = T}
+summary(out1)
+```
+
+#### kappa 202
+
+```{r kappa_202, results = 'hide', cache = T}
+out2 <- genMCMC(mod, dataList, kappa = 202)
+```
+
+```{r sum_kappa_202, cache = T}
+summary(out2)
+```
+
+#### kappa 52
+
+```{r kappa_52, results = 'hide', cache = T}
+out3 <- genMCMC(mod, dataList, thinSteps = 10, kappa = 52, mPriorProb = c(0.95, 0.05))
+```
+
+```{r post_kappa_52, cache = T}
+plotMCMC(mod, out3) 
+```
+
+```{r diag_C, cache = T}
+pnames <- varnames(out3)
+for(p in pnames) { 
+  diagMCMC(out3, p) 
+}
+```
+
+## Exercise 10.3
+
+### Part A
+
+Model:
+
+```
+theta <- equals(m,1)*theta1 + equals(m,2)*theta2
+theta1 ~ dbeta( omega1[m]*(kappa1[m]-2)+1 , (1-omega1[m])*(kappa1[m]-2)+1 )
+omega1[1] <- .10 # true prior value
+omega1[2] <- .10 # pseudo prior value
+kappa1[1] <- 20 # true prior value
+kappa1[2] <- 20 # pseudo prior value
+theta2 ~ dbeta( omega2[m]*(kappa2[m]-2)+1 , (1-omega2[m])*(kappa2[m]-2)+1 )
+omega2[1] <- .90 # pseudo prior value
+omega2[2] <- .90 # true prior value
+kappa2[1] <- 20 # pseudo prior value
+kappa2[2] <- 20 # true prior value
+```
+
+```{r mod2}
+JagsYdichXnom1subjMbernBetaModelCompPseudoPrior <- function()
+{
+  out <- list()
+  
+  oldClass(out) <- "JagsYdichXnom1subjMbernBetaModelCompPseudoPrior"
+  return(out)
+}
+
+mod2 <- JagsYdichXnom1subjMbernBetaModelCompPseudoPrior()
+
+```
+
+#### Pseudo-priors = priors
+
+```{r mcmc4, results = 'hide', cache = T}
+out4 <- genMCMC(mod2, 
+  omega1 = c(.10, # true prior value
+    .10), # pseudo prior value
+  kappa1 = c(20, # true prior value
+    20), # pseudo prior value
+  omega2 = c(.90, # pseudo prior value
+    .90), # true prior value
+  kappa2 = c(20, # pseudo prior value
+    20), # true prior value
+)
+```
+
+```{r diag4, cache = T}
+diagMCMC(out4, "m") 
+```
+
+```{r post4, cache = T}
+plotMCMC(mod2, out4) 
+```
+
+#### Pseudo-priors != priors
+
+```{r mcmc5, results = 'hide', cache = T}
+out5 <- genMCMC(mod2, 
+  omega1 = c(.10, # true prior value
+    .40), # pseudo prior value
+  kappa1 = c(20, # true prior value
+    50), # pseudo prior value
+  omega2 = c(.70, # pseudo prior value
+    .90), # true prior value
+  kappa2 = c(50, # pseudo prior value
+    20), # true prior value
+)
+```
+
+```{r diag5, cache = T}
+diagMCMC(out5, "m") 
+```
+
+```{r post5, cache = T}
+plotMCMC(mod2, out5) 
+```
+
+### Part B
+
+```{r mcmc6, results = 'hide', cache = T}
+out6 <- genMCMC(mod2, 
+  omega1 = c(.10, # true prior value
+    .50), # pseudo prior value
+  kappa1 = c(20, # true prior value
+    2.1), # pseudo prior value
+  omega2 = c(.50, # pseudo prior value
+    .90), # true prior value
+  kappa2 = c(2.1, # pseudo prior value
+    20), # true prior value
+)
+```
+
+```{r diag6, cache = T}
+diagMCMC(out6, "m") 
+```
+
+```{r post6, cache = T}
+plotMCMC(mod2, out6) 
+```
+
+#### Conclusions
+
+The ESS is around 2,000 with the broad pseudo-priors, which is an intermediate number between good (10,000) and bad (500) solutions.
+
+
+
+
+
+
+
+
+
