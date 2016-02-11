@@ -1,0 +1,151 @@
+---
+title: "Ex. 11"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-11/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
+```
+
+## Include 
+
+### Include `dbda`
+
+```{r src, cache = F}
+load_all("~/git/variani/dbda/")
+```
+
+## Exercise 11.1
+
+### Part A
+
+```{r ex1}
+N <- 45
+z <- 3
+
+theta <- 1/6
+
+c(theta, z/N)
+
+# `theta > z/N` => lower tail
+lowTailZ <- 0:z
+
+p <- sum(choose(N, lowTailZ) * theta^lowTailZ * (1 - theta) ^ (N - lowTailZ))
+
+# two-tail test
+2*p
+```
+
+We would not reject the null hypothesis.
+
+### Part B
+
+
+```{r ex1_B}
+N <- 45
+z <- 3
+
+theta <- 1/6
+
+c(theta, z/N)
+
+# Now we sum over the distribution. See Footnote 2, p. 307.
+# Cumulative low tail probability is now given by negative binomial, but now the
+# tail is over n>=N, which is computed as 1-p(n<N), as explained in Footnote 2,
+# p. 307.
+complN <- seq(z, N-1)
+
+p <- 1 - sum((z / complN) * choose(complN, z) * theta^z * (1 - theta) ^ (complN - z))
+
+# two-tail test
+2*p
+```
+
+We reject the null hypothesis.
+
+## Exercise 11.2
+
+### Part A
+
+```{r HCI_A}
+N <- 45
+z <- 3
+
+theta <- 1/6
+
+# z/N = 3/45 = 0.06
+# For candidate theta values from 0.170 to 0.190, which are greater than z/N observed,
+# compute the left-tail p value:
+lowTailZ = 0:z
+for(theta in seq(0.170, 0.190, by = 0.001)) {
+  print(c(theta,
+    2 * sum(choose(N, lowTailZ) * theta^lowTailZ * (1 - theta)^(N - lowTailZ))))
+}
+```
+
+HCI: `0.182`
+
+```{r LCI_A}
+N <- 45
+z <- 3
+
+theta <- 1/6
+
+# z/N = 3/45 = 0.06
+# For candidate theta values from 0.170 to 0.190, which are greater than z/N observed,
+# compute the left-tail p value:
+highTailZ = z:N
+for(theta in seq(0.005, 0.020, by = 0.001)) {
+  print(c(theta,
+    2 * sum(choose(N, highTailZ) * theta^highTailZ * (1 - theta)^(N - highTailZ))))
+}
+```
+
+HCI: `0.014`
+
+## Exercise 11.3
+
+```{r ex_3}
+# Data:
+N = 45 ; z = 3
+
+# Hypothetical value of parameter:
+theta = 1/6
+
+# Specify possible N values:
+Nposs = 40:50
+
+# Specify probability of each N (here all equal):
+Nprob = rep(1,length(Nposs)) # All Nposs get relative probability of 1.
+Nprob = Nprob/sum(Nprob) # Normalize to get actual probability mass.
+
+# Initialize total tail probability to zero.
+totalP = 0
+
+# For each N, compute its p value, and accumulate the weighted total p:
+for ( i in 1:length(Nposs) ) {
+ # For convenience, rename the N that is presently being considered:
+ thisN = Nposs[i]
+ # For this N, determine the max z that is in the low tail.
+ # It must satisfy thisZ/thisN <= z/N.
+ thisZ = max( (0:thisN)[ (0:thisN)/thisN <= z/N ] )
+ # Now compute tail probability, i.e., sum of binomial probabilities from z/N
+ # down to zero.
+ lowTailZ = 0:thisZ
+ thisP = 2*sum(
+ choose(thisN,lowTailZ) * theta^lowTailZ * (1-theta)^(thisN-lowTailZ) )
+ # Accumulate to totalP the value of thisP weight by the probability of thisN:
+ totalP = totalP + Nprob[i] * thisP
+ # Display progress through the loop:
+ show( c( thisZ, thisN , thisP ) )
+}
+show(totalP)
+```
+
+
