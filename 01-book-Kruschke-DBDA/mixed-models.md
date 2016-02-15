@@ -1,4 +1,14 @@
-## References
+## Mixed models in genetics
+
+h2r
+
+* [paper](https://www.researchgate.net/publication/236253076_Bayesian_inference_of_mixed_models_in_quantitative_genetics_of_crop_species) for pedigrees (sib-pairs) + JAGS code
+* JAGS applied to twin studies http://scheibehenne.de/Scheibehenne.et.al.Appetite2014.onlineSupplement.pdf
+      * similar example https://www.utwente.nl/bms/omd/Medewerkers/vandenbergfiles/schwabevandenbergBG2013.pdf
+
+
+
+## Mixed models
 
 General notes
 
@@ -17,3 +27,5 @@ Discussions
 Blog posts
 
 * glmer2stan: https://hlplab.wordpress.com/2013/12/13/going-full-bayesian-with-mixed-effects-regression-models/
+* http://people.ucsc.edu/~abrsvn/general-random-effects-jags.html
+      * Lecture: http://www.unc.edu/courses/2010fall/ecol/563/001/docs/lectures/lecture28.htm
