@@ -6,13 +6,19 @@ h2r
 * JAGS applied to twin studies http://scheibehenne.de/Scheibehenne.et.al.Appetite2014.onlineSupplement.pdf
       * similar example https://www.utwente.nl/bms/omd/Medewerkers/vandenbergfiles/schwabevandenbergBG2013.pdf
 
+Fine mapping
 
+* http://cc.oulu.fi/~misillan/Assoc_Map_WinBUGS_1.txt from http://cc.oulu.fi/~misillan/
 
 ## Mixed models
 
 General notes
 
 * By Ben Bolker: https://www.nceas.ucsb.edu/system/files/mixed.pdf
+
+Scripts
+
+* Correlation between RE https://github.com/mclark--/Miscellaneous-R-Code/blob/master/ModelFitting/Bayesian/rstan_MixedModelSleepstudy_withREcorrelation.R
 
 Tutorials
 
