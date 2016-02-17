@@ -1,0 +1,108 @@
+---
+title: "Ex. 14"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-14/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
+```
+
+## Include 
+
+### Include `dbda`
+
+```{r src, cache = F}
+load_all("~/git/variani/dbda/")
+```
+
+## Exercise 14.1
+
+### Data
+
+```{r dat}
+myData <- read.csv(system.file("data", "TherapeuticTouchData.csv", package = "dbda"))
+```
+
+### Stan
+
+```{r mcmc_stan, results = 'hide', cache = TRUE}
+StanYdichXnomSsubjMbernBetaOmegaKappa <- function()
+{
+  out <- list()
+  
+  oldClass(out) <- "StanYdichXnomSsubjMbernBetaOmegaKappa"
+  return(out)
+}
+
+mod <- StanYdichXnomSsubjMbernBetaOmegaKappa()
+
+# Generate the MCMC chain:
+t1 <- system.time({
+  out <- genMCMC(mod, data = myData , sName="s" , yName="y" ,  
+    numSavedSteps = 12000, thinSteps=10 )
+})
+
+mcmcCoda <- out$codaSamples
+stanFit <- out$stanFit           
+```
+
+
+```{r diag_stan, cache = TRUE}
+for(p in c("omega","kappa")) { 
+  diagMCMC(mcmcCoda, parName = p)
+}
+```
+
+
+### JAGS
+
+```{r mcmc_jags, results = 'hide', cache = TRUE}
+JagsYdichXnomSsubjMbernBetaOmegaKapp <- function()
+{
+  out <- list()
+  
+  oldClass(out) <- "JagsYdichXnomSsubjMbernBetaOmegaKapp"
+  return(out)
+}
+
+
+mod2 <- JagsYdichXnomSsubjMbernBetaOmegaKapp()
+
+# Generate the MCMC chain:
+t2 <- system.time({
+  out2 <- genMCMC(mod2, data = myData , sName="s" , yName="y" ,  
+    numSavedSteps = 20000, thinSteps=10 )
+})
+```
+
+```{r diag_jags, cache = TRUE}
+for(p in c("omega","kappa")) { 
+  diagMCMC(out2, parName = p)
+}
+```
+  
+### Comparison
+
+CPU time Stan:
+
+```{r}
+t1
+```
+  CPU time:
+
+```{r}
+t1
+```
+CPU time JAGS:
+
+```{r}
+t2
+```
+
+
