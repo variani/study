@@ -1,0 +1,127 @@
+---
+title: "Ex. 16"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-16/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
+```
+
+## Include 
+
+```{r, cache = F}
+library(ggplot2)
+```
+
+### Include `dbda`
+
+```{r src, cache = F}
+load_all("~/git/variani/dbda/")
+```
+
+### Settings
+
+```{r settings, cache = FALSE}
+theme_set(theme_light())
+```
+
+## Exercise 16.1
+
+### Data
+
+```{r dat}
+dat <- read.csv(system.file("data", "ShohatOphirKAMH2012dataReduced.csv", package = "dbda"))
+xName <- "Group"
+yName <- "PreferenceIndex"
+```
+
+```{r boxplot, cache = TRUE}
+ggplot(dat, aes(Group, PreferenceIndex)) + geom_boxplot() 
+```
+
+```{r boxplot_2, cache = TRUE}
+ggplot(dat, aes(Group, GrandTotal)) + geom_boxplot() 
+```
+
+### Part A
+
+```{r mcmc, results = 'hide', cache = TRUE}
+JagsYmetXnom2grpMrobustHet <- function()
+{
+  out <- list()
+  
+  oldClass(out) <- "JagsYmetXnom2grpMrobustHet"
+  return(out)
+}
+
+mod <- JagsYmetXnom2grpMrobustHet()
+
+xName <- "Group"
+yName <- "PreferenceIndex"
+
+RopeMuDiff <- c(-0.1, 0.1)
+RopeSdDiff <- c(-0.1, 0.1)
+RopeEff <- c(-0.1, 0.1)
+
+mcmcCoda <- genMCMC(mod, datFrm = dat, yName = yName, xName = xName,
+  numSavedSteps = 50000)
+```
+
+```{r diag, cache = TRUE}
+pnames <- varnames(mcmcCoda)
+for(p in pnames) {
+  diagMCMC(mcmcCoda, parName = p)
+}
+```
+
+```{r plot, fig.height = 9, cache = T}
+plotMCMC(mod, mcmcCoda , datFrm=dat , yName=yName , xName=xName , 
+          RopeMuDiff=RopeMuDiff , RopeSdDiff=RopeSdDiff , RopeEff=RopeEff ,
+          pairsPlot=TRUE)
+```          
+
+### Part B
+
+### MCMC
+
+```{r mcmc2, results = 'hide', cache = TRUE}
+JagsYmetXnom2grpMrobustHet <- function()
+{
+  out <- list()
+  
+  oldClass(out) <- "JagsYmetXnom2grpMrobustHet"
+  return(out)
+}
+
+mod <- JagsYmetXnom2grpMrobustHet()
+
+xName <- "Group"
+yName <- "GrandTotal"
+
+RopeMuDiff <- c(-0.1, 0.1)
+RopeSdDiff <- c(-0.1, 0.1)
+RopeEff <- c(-0.1, 0.1)
+
+mcmcCoda2 <- genMCMC(mod, datFrm = dat, yName = yName, xName = xName,
+  numSavedSteps = 50000)
+```
+
+
+```{r plot2, fig.height = 9, cache = T}
+plotMCMC(mod, mcmcCoda2 , datFrm=dat , yName=yName , xName=xName , 
+          RopeMuDiff=RopeMuDiff , RopeSdDiff=RopeSdDiff , RopeEff=RopeEff ,
+          pairsPlot=TRUE)
+```          
+
+
+
+
+
+
+
