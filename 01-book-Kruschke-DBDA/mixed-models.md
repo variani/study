@@ -3,6 +3,7 @@
 h2r
 
 * [paper](https://www.researchgate.net/publication/236253076_Bayesian_inference_of_mixed_models_in_quantitative_genetics_of_crop_species) for pedigrees (sib-pairs) + JAGS code
+          * Code in a better format from the thesis http://alexandria.cpd.ufv.br:8000/teses/genetica%20e%20melhoramento/2012/247890f.pdf
 * JAGS applied to twin studies http://scheibehenne.de/Scheibehenne.et.al.Appetite2014.onlineSupplement.pdf
       * similar example https://www.utwente.nl/bms/omd/Medewerkers/vandenbergfiles/schwabevandenbergBG2013.pdf
 * Animan model in Stan https://groups.google.com/forum/#!topic/stan-users/2eZ11QG_pbU
