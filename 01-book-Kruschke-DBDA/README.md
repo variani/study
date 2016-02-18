@@ -1,5 +1,9 @@
 ## References
 
+Similar projects
+
+* https://github.com/erikson84/BayesDataAnalysisWithPyMC
+
 Tools
 
 * http://mc-stan.org/
