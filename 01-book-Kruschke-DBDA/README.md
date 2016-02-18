@@ -3,6 +3,7 @@
 Similar projects
 
 * https://github.com/erikson84/BayesDataAnalysisWithPyMC
+* https://github.com/aloctavodia/Doing_bayesian_data_analysis
 
 Tools
 
@@ -23,6 +24,10 @@ magesblog.com
 Other blog posts
 
 * http://thinkinator.com/2016/01/12/r-users-will-now-inevitably-become-bayesians/
+
+Bloggers
+
+* * http://twiecki.github.io/blog/2014/03/17/bayesian-glms-3/
 
 ## Discusions
 
