@@ -42,6 +42,7 @@ theme_set(theme_light())
 ### Part A
 
 ```{r dat}
+set.seed(1)
 N <- 500
 
 b0 <- 0
@@ -66,6 +67,12 @@ for(i in 1:length(x)) {
 dat <- data.frame(y = y, y0 = y0, x = x, mu = mu, mu2 = mu2, mu3 = mu3, mu0 = mu0)
 ```
 
+#### Logit function on x
+
+```{r logit}
+plot(x, 1 / (1 + exp(-(b0 + b1*x))))
+```
+
 #### Summary data
 
 The points with at extremes (0 or 1) are more definitive.
@@ -88,18 +95,30 @@ range(dat$mu)
 range(dat$mu2)
 ```
 
+See the same distribution on histograms.
+
+```{r hist_mu, cache = T}
+grid.arrange(qplot(dat$mu0) + xlim(0, 1) + ggtitle("guess = 0"), 
+  qplot(dat$mu) + xlim(0, 1) + ggtitle("guess = 0.1"), 
+  qplot(dat$mu2) + xlim(0, 1) + ggtitle("guess = 0.5"), 
+  ncol = 1)
+```
+
 
 #### Plot data
 
 ```{r plot_dat, cache = T}
-ggplot(dat, aes(mu0, mu)) + geom_point()
-ggplot(dat, aes(log(mu0/(1-mu0)), log(mu/(1-mu)))) + geom_point()
-ggplot(dat, aes(x, log(mu0/(1-mu0)))) + geom_point() + ggtitle("guess = 0")
-ggplot(dat, aes(x, log(mu/(1-mu)))) + geom_point() + ggtitle("guess = 0.1")
-ggplot(dat, aes(x, log(mu2/(1-mu2)))) + geom_point() + ggtitle("guess = 0.5")
+grid.arrange(
+  ggplot(dat, aes(mu0, mu)) + geom_point(),
+  ggplot(dat, aes(x, log(mu0/(1-mu0)))) + geom_point() + ggtitle("guess = 0"),
+  ggplot(dat, aes(x, log(mu/(1-mu)))) + geom_point() + ggtitle("guess = 0.1"),
+  ggplot(dat, aes(x, log(mu2/(1-mu2)))) + geom_point() + ggtitle("guess = 0.5"),
+  ncol = 2)
 ```
 
-### Part B
+### Part B: Logistic regression
+
+#### Compute models
 
 ```{r mcmc, results = 'hide', cache = TRUE}
 JagsYdichXmetMultiMlogistic <- function()
@@ -116,25 +135,60 @@ out <- genMCMC(mod, dat, xName="x" , yName="y" ,
   numSavedSteps=10000 , thinSteps=1)                 
 ```
 
-
 ```{r mcmc0, results = 'hide', cache = TRUE}
 out0 <- genMCMC(mod, dat, xName="x" , yName="y0", 
   numSavedSteps=10000 , thinSteps=1)               
 ```
 
+#### Plot clean model
 
 ```{r plot0, cache = T}
 plotMCMC(mod, out0 , dat , xName="x" , yName="y0",
   showCurve=T) 
 ```
 
+#### Plot noisy model
+
 ```{r plot, cache = T}
 plotMCMC(mod, out , dat , xName="x" , yName="y",
   showCurve=T) 
 ```
 
+### Part C: Robust Logistic regression
 
+#### Compute models
 
+```{r mcmc2, results = 'hide', cache = TRUE}
+JagsYdichXmetMultiMlogisticRobust <- function()
+{
+  out <- list()
+  oldClass(out) <- "JagsYdichXmetMultiMlogisticRobust"
+
+  return(out)
+}
+
+mod2 <- JagsYdichXmetMultiMlogisticRobust()   
+
+out2 <- genMCMC(mod2, dat, xName="x" , yName="y" , 
+  numSavedSteps=10000 , thinSteps=1)                 
+```
+
+```{r mcmc20, results = 'hide', cache = TRUE}
+out20 <- genMCMC(mod2, dat, xName="x" , yName="y0", 
+  numSavedSteps=10000 , thinSteps=1)               
+```
+
+#### Plot models
+
+```{r plot2, cache = T}
+plotMCMC(mod2, out2 , dat , xName="x" , yName="y0",
+  showCurve=T) 
+```
+
+```{r plot20, cache = T}
+plotMCMC(mod2, out20 , dat , xName="x" , yName="y0",
+  showCurve=T) 
+```
 
 
 
