@@ -1,0 +1,90 @@
+---
+title: "Ex. 23"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-23/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
+```
+
+## Answers
+
+## Include 
+
+```{r, cache = F}
+library(ggplot2)
+library(gridExtra)
+```
+
+### Include `dbda`
+
+```{r src, cache = F}
+load_all("~/git/variani/dbda/")
+```
+
+### Settings
+
+```{r settings, cache = FALSE}
+theme_set(theme_light())
+```
+
+## Exercise 23.1
+
+### Part A
+
+```{r 23_1_A}
+ordinal_prob <- function(mu = 3.5, sigma = 2.0,
+  thresh = c(1.5, 2.5, 3.5, 4.5, 5.5, 6.5))
+{
+  pToThresh <- pnorm(thresh, mu, sigma)
+  c(pToThresh, 1) - c(0, pToThresh)
+}  
+
+# Figure 23.1 (1)
+round(ordinal_prob(mu = 4, sigma = 1.5), 2)
+
+# Figure 23.1 (2)
+round(ordinal_prob(mu = 1, sigma = 2.5), 2)
+
+# Figure 23.1 (3)
+round(ordinal_prob(mu = 4, sigma = 1, thresh = c(1.5, 3.1, 3.7, 4.3, 4.9, 6.5)), 2)
+
+# Figure 23.1 (4)
+round(ordinal_prob(mu = 4, sigma = 3, thresh = c(1.5, 2.25, 3, 5, 5.75, 6.5)), 2)
+```
+
+
+### Part B
+
+Aapproximately compute the posterio porbabilities based on results displayed on Figure 23.3 (p. 680).
+
+```{r}
+p <- round(ordinal_prob(mu = 3.6, sigma = 1.6, thresh = c(1.5, 3.3, 3.9, 4.3, 4.9, 6.5)), 2)
+p
+
+order(p, decreasing = TRUE)
+```
+
+The second (2) category has the highest proportion, the next largest category is 6.
+
+### Part C
+
+```{r}
+assests1 <- 1.6e5
+assests2 <- 4.9e5
+
+pred_mu <- function(x, b0 =  3.16, b1 = 4.14e-6) b0 + b1 * x
+
+thresh <- c(1.5, 2.2, 3.1, 4.5)
+sigma <- 0.854
+
+round(ordinal_prob(mu = pred_mu(assests1), sigma = sigma, thresh = thresh), 2)
+round(ordinal_prob(mu = pred_mu(assests2), sigma = sigma, thresh = thresh), 2)
+```
+

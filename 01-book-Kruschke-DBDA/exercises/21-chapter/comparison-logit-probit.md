@@ -92,4 +92,42 @@ ggplot(pdat, aes(x, ilogit)) + geom_point() + geom_point(aes(x, iprobit), color 
 
 ![](logit-probit/logit_probit-1.png) 
 
+## Two logit and probit models
+
+
+```r
+JagsYdichXmetMultiMlogistic <- function()
+{
+  out <- list()
+  oldClass(out) <- "JagsYdichXmetMultiMlogistic"
+
+  return(out)
+}
+
+mod <- JagsYdichXmetMultiMlogistic() 
+```
+
+
+```r
+out11 <- genMCMC(mod, dat, xName = "x", yName = "y1", numSavedSteps = 5000, thinSteps = 5, invlink = "ilogit")
+out12 <- genMCMC(mod, dat, xName = "x", yName = "y2", numSavedSteps = 5000, thinSteps = 5, invlink = "iprobit")
+```
+
+### Plot logit model
+
+
+```r
+plotMCMC(mod, out11, dat, xName = "x", yName = "y1", showCurve = TRUE) 
+```
+
+![](logit-probit/plot_out11-1.png) ![](logit-probit/plot_out11-2.png) ![](logit-probit/plot_out11-3.png) 
+
+### Plot probit model
+
+
+```r
+plotMCMC(mod, out12, dat, xName = "x", yName = "y2", showCurve = TRUE) 
+```
+
+![](logit-probit/plot_out12-1.png) ![](logit-probit/plot_out12-2.png) ![](logit-probit/plot_out12-3.png) 
 
