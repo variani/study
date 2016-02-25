@@ -13,6 +13,47 @@ output:
 opts_chunk$set(fig.path = "logit-probit/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T)
 ```
 
+## About
+
+This document explores logit and probit models in JAGS to deal with dochotomous (response) data.
+
+### JAGS code
+
+Logistic regresion in JAGS:
+
+```
+model {
+  ### Likelihood
+  for(i in 1:Ntotal) {
+    # logistic function is ilogit 
+    y[i] ~ dbern(ilogit(zbeta0 + sum(zbeta[1:Nx] * zx[i,1:Nx])))
+  }
+  # Priors
+  zbeta0 ~ dnorm( 0 , 1/2^2 )  
+  for(j in 1:Nx) {
+    zbeta[j] ~ dnorm( 0 , 1/2^2 )
+  }
+}
+```
+
+Probit regression in JAGS:
+
+```
+model {
+  ### Likelihood
+  for(i in 1:Ntotal) {
+    # inverse probit function  is phi
+    y[i] ~ dbern(phi(zbeta0 + sum(zbeta[1:Nx] * zx[i,1:Nx])))
+  }
+  # Priors
+  zbeta0 ~ dnorm( 0 , 1/2^2 )  
+  for(j in 1:Nx) {
+    zbeta[j] ~ dnorm( 0 , 1/2^2 )
+  }
+}
+```
+
+
 ## Include 
 
 ```{r, cache = F}

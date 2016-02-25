@@ -88,3 +88,51 @@ round(ordinal_prob(mu = pred_mu(assests1), sigma = sigma, thresh = thresh), 2)
 round(ordinal_prob(mu = pred_mu(assests2), sigma = sigma, thresh = thresh), 2)
 ```
 
+
+## Exercise 23.2 
+
+### Basic model on Movie data
+
+```{r data_par}
+myData = read.csv(system.file("data", "Movies.csv", package = "dbda"))
+yName = "Rating" ; xName = c("Year","Length")
+# convert 1/2 scale ratings to integers:
+myData$Rating = as.numeric(as.factor(myData$Rating))
+numSavedSteps=5000 ; thinSteps=1 # increase for higher ESS
+```
+
+```{r mod}
+JagsYordXmetMultiMnormal <- function()
+{
+  out <- list()
+  oldClass(out) <- "JagsYordXmetMultiMnormal"
+
+  return(out)
+}
+
+mod <- JagsYordXmetMultiMnormal()
+```
+
+```{r mcmc, results = 'hide', cache = TRUE}
+mcmcCoda <- genMCMC(mod, data=myData , xName=xName , yName=yName , 
+  numSavedSteps=numSavedSteps , thinSteps=thinSteps) 
+```
+
+```{r plot, cache = T}
+plotMCMC(mod, mcmcCoda , data=myData , xName=xName , yName=yName , 
+  pairsPlot=TRUE , showCurve=FALSE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
