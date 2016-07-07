@@ -1,5 +1,14 @@
 ## References
 
+Main 
+
+* https://sites.google.com/site/doingbayesiandataanalysis/ (the 2nd edition)
+      * Exercises and solutions: https://sites.google.com/site/doingbayesiandataanalysis/exercises
+
+Discussions
+
+* https://www.reddit.com/r/statistics/comments/3cw5pa/gelmans_bayesian_data_analysis_vs_kruschkes_doing/
+
 Similar projects
 
 * https://github.com/erikson84/BayesDataAnalysisWithPyMC
@@ -27,7 +36,7 @@ Other blog posts
 
 Bloggers
 
-* * http://twiecki.github.io/blog/2014/03/17/bayesian-glms-3/
+* http://twiecki.github.io/blog/2014/03/17/bayesian-glms-3/
 
 ## Discusions
 
