@@ -1,0 +1,97 @@
+---
+title: "Examples from BayesianFirstAid R package based on rjags"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures/", comment = NA, results = 'verbatim', tidy = F, message = F, warning = F, echo = T, cache = TRUE)
+```
+
+# About
+
+The idea is to go through tests implemented in [Bayesian First Aid](https://github.com/rasmusab/bayesian_first_aid) R package
+and try different Baeysian engines: rjags (used by Bayesian First Aid), rstan and pystan.
+So, well-known statistical tests in the Bayesian fashion will help to learn the syntaxes of different tools.
+This document shows code for rjags.
+
+As stated in Bayesian First Aid [page](https://github.com/rasmusab/bayesian_first_aid):
+
+Currently Bayesian First Aid implements five alternative models to classical tests. Each of these alternative models are described in detail on my blog (see links below):
+
+* Binomial Test: bayes.binom.test(x, n) . [Code example and details](http://sumsar.net/blog/2014/01/bayesian-first-aid-binomial-test/)
+* One Sample and Paired Samples t-test: bayes.t.test(x) . [Code example and details](http://sumsar.net/blog/2014/02/bayesian-first-aid-one-sample-t-test/)
+* Two Sample t-test: bayes.t.test(x, y) . Code example and details
+* Pearson Correlation Test: bayes.cor.test(x, y) . Code example and details
+* Test of Proportions: bayes.prop.test(x, n) . Code example and details
+* Poisson test: bayes.poisson.test(x, T) . Code example and details
+
+# Include
+
+```{r, cache = FALSE}
+library(BayesianFirstAid)
+```
+
+# Binomial Test
+
+```{r binom1}
+fitb <- bayes.binom.test(c(9, 2))
+fitb
+```
+
+```{r plot_fitb}
+plot(fitb)
+```
+
+Model code in rjags:
+
+```{r code_fitb}
+model.code(fitb)
+```
+
+## Not a uniform prior
+
+The default flat prior used in the example above.
+
+```{r default_prior_binom}
+xp <- seq(0, 1, length = 100)
+yp <- dbeta(xp, 1, 1)
+plot(xp, yp, t = 'l')
+```
+
+Let's try another one `beta(2, 2)`.
+
+```{r prior_binom}
+xp <- seq(0, 1, length = 100)
+yp <- dbeta(xp, 2, 2)
+plot(xp, yp, t = 'l')
+```
+
+The `rjags` code is:
+
+```{r binom2}
+# Setting up the data
+x <- 9 
+n <- 11 
+
+# The model string written in the JAGS language
+model_string <- "model {
+  x ~ dbinom(theta, n)
+  theta ~ dbeta(2, 2)
+  x_pred ~ dbinom(theta, n)
+}"
+
+# Running the model
+model <- jags.model(textConnection(model_string), data = list(x = x, n = n), 
+                    n.chains = 3, n.adapt=1000)
+samples <- coda.samples(model, c("theta", "x_pred"), n.iter=5000)
+
+sf <- BayesianFirstAid:::mcmc_stats(samples)
+sf
+```
+
