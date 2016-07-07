@@ -1,0 +1,128 @@
+---
+title: "Ex. 20"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures-20/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T, cache = T)
+```
+
+
+# Include 
+
+```{r, cache = F}
+library(ggplot2)
+library(gridExtra)
+```
+
+## Include `dbda`
+
+```{r src, cache = F}
+load_all("~/git/variani/dbda/")
+```
+
+# Settings
+
+```{r settings, cache = FALSE}
+theme_set(theme_light())
+```
+
+# Data preparation & Parameter settings
+
+## Data
+
+```{r dat}
+myDataFrame = read.csv(system.file("data", "Salary.csv", package = "dbda"))
+
+# Re-label and re-order the Pos factor:
+myDataFrame$Pos = factor( myDataFrame$Pos , 
+                          levels=c("FT3","FT2","FT1","NDW","DST") , 
+                          ordered=TRUE , 
+                          labels=c("Assis","Assoc","Full","Endow","Disting") )
+
+# Specify the column names in the data file relevant to the analysis:
+yName="Salary" 
+# x1 should be factor with fewer levels, to plot in single pane:
+x1Name="Pos" 
+x2Name="Org" 
+```
+
+## Model parameters
+
+```{r par_mod}
+fileNameRoot = NULL # "SalaryNormalHom-" 
+graphFileType = "eps" 
+```
+
+## Contrasts
+
+```{r contrasts}
+# Specify desired contrasts.
+# Each main-effect contrast is a list of 2 vectors of level names, 
+# a comparison value (typically 0.0), and a ROPE (which could be NULL):
+x1contrasts = list( 
+  list( c("Full") , c("Assoc") , compVal=0.0 , ROPE=c(-1000,1000) ) ,
+  list( c("Assoc") , c("Assis") , compVal=0.0 , ROPE=c(-1000,1000) ) 
+)
+x2contrasts = list( 
+  list( c("CHEM") , c("ENG") , compVal=0.0 , ROPE=c(-1000,1000) ) ,
+  list( c("CHEM") , c("PSY") , compVal=0.0 , ROPE=c(-1000,1000) ) ,
+  list( c("BFIN") , c("PSY","CHEM","ENG") , compVal=0.0 , ROPE=c(-1000,1000) ) 
+)
+# Each interaction contrast is a list of 2 lists of 2 vectors of level names, 
+# a comparison value (typically 0.0), and a ROPE (which could be NULL)::
+x1x2contrasts = list( 
+  list( list( c("Full") , c("Assis") ) ,
+        list( c("CHEM") , c("ENG") ) ,
+        compVal=0.0 , ROPE=c(-1000,1000) ) ,
+  list( list( c("Full") , c("Assis") ) ,
+        list( c("CHEM") , c("PSY") ) ,
+        compVal=0.0 , ROPE=c(-1000,1000) ) ,
+  list( list( c("Full") , c("Assoc","Assis") ) ,
+        list( c("BFIN") , c("PSY","CHEM","ENG") ) , 
+        compVal=0.0 , ROPE=c(-1000,1000) )
+) 
+```
+
+# Exercise 20.2
+
+Creating an object of S3 class `JagsYmetXnom2facMnormalHom`:
+
+```{r mod}
+JagsYmetXnom2facMnormalHom <- function()
+{
+  out <- list()
+  
+  oldClass(out) <- "JagsYmetXnom2facMnormalHom"
+  return(out)
+}
+
+mod <- JagsYmetXnom2facMnormalHom()
+```
+
+
+## Part A
+
+```{r out1, results = 'hide'}
+out1 <- genMCMC(mod, myDataFrame, yName, x1Name, x2Name, numSavedSteps = 15000, thinSteps = 5)
+```
+
+### Figure 20.4
+
+```{r fig_20_4}
+x1c <- list(list("Assoc", "Assis", compVal = 0.0, ROPE = c(-1000, 1000)))
+plotMCMC(mod, out1, myDataFrame, yName, x1Name, x2Name, x1contrasts = x1c)
+
+x2c <- list(list("CHEM", "PSY", compVal = 0.0, ROPE = c(-1000, 1000)))
+plotMCMC(mod, out1, myDataFrame, yName, x1Name, x2Name, x2contrasts = x2c)
+
+x2c <- list(list("BFIN", c("PSY", "CHEM", "ENG"), compVal = 0.0, ROPE = c(-1000, 1000)))
+plotMCMC(mod, out1, myDataFrame, yName, x1Name, x2Name, x2contrasts = x2c)
+```
+
