@@ -113,7 +113,19 @@ mod <- JagsYmetXnom2facMnormalHom()
 out1 <- genMCMC(mod, myDataFrame, yName, x1Name, x2Name, numSavedSteps = 15000, thinSteps = 5)
 ```
 
-### Figure 20.4
+### Figure 20.3
+
+```{r fig_20_3}
+plotMCMC(mod, out1, myDataFrame, yName, x1Name, x2Name, x2levels = "BFIN")
+```
+
+#### Replicate the code
+
+```{r rep_code}
+mat <- as.matrix(out1, chains = TRUE)
+par <- varnames(out1) 
+```
+
 
 ### Figure 20.4
 
