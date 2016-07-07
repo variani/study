@@ -115,6 +115,8 @@ out1 <- genMCMC(mod, myDataFrame, yName, x1Name, x2Name, numSavedSteps = 15000, 
 
 ### Figure 20.4
 
+### Figure 20.4
+
 ```{r fig_20_4}
 x1c <- list(list("Assoc", "Assis", compVal = 0.0, ROPE = c(-1000, 1000)))
 plotMCMC(mod, out1, myDataFrame, yName, x1Name, x2Name, x1contrasts = x1c)
