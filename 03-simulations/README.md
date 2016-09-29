@@ -1,4 +1,8 @@
 
+## Articles
+
+* [Quantifying the degree of sharing of genetic and non-genetic causes of gene expression variability across four tissues](https://scholar.google.es/citations?view_op=view_citation&hl=en&user=k3u2610AAAAJ&sortby=pubdate&citation_for_view=k3u2610AAAAJ:yD5IFk8b50cC)
+
 ## Books
 
 * https://leanpub.com/LittleInferenceBook/
