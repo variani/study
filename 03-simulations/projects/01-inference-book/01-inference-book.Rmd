@@ -1,0 +1,48 @@
+---
+title: "Exercises  from Little Inference Book"
+author: "Andrey Ziyatdinov"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme: united
+    toc: true
+    keep_md: true
+---
+
+```{r options, echo = F}
+opts_chunk$set(fig.path = "figures/", comment = NA, results = 'markup', tidy = F, message = F, warning = F, echo = T, cache = TRUE)
+```
+
+# Include
+
+```{r}
+library(tidyverse)
+```
+
+## Simulation example 1: standard normals
+
+[link](https://leanpub.com/LittleInferenceBook/read#leanpub-auto-simulation-example-1-standard-normals)
+
+```{r ex1}
+nosim <- 1000
+n <- 10
+mat <- matrix(rnorm(nosim * n), nosim)
+dim(mat)
+
+means <- apply(mat, 1, mean)
+length(means)
+
+sd(means)
+```
+
+```{r ex1_pipes}
+nsim <- 1000
+n <- 10
+
+sim_means <- 
+  rep(n, nsim) %>%
+  sapply(. %>% rnorm %>% mean)
+
+sim_means_sd <- sim_means %>% sd
+``` 
+ 
