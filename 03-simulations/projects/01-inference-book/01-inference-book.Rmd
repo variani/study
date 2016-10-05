@@ -16,33 +16,56 @@ opts_chunk$set(fig.path = "figures/", comment = NA, results = 'markup', tidy = F
 # Include
 
 ```{r}
+library(pander)
 library(tidyverse)
 ```
 
-## Simulation example 1: standard normals
+## Settings
 
-[link](https://leanpub.com/LittleInferenceBook/read#leanpub-auto-simulation-example-1-standard-normals)
 
-```{r ex1}
-nosim <- 1000
-n <- 10
-mat <- matrix(rnorm(nosim * n), nosim)
-dim(mat)
+```{r settings, cache = FALSE}
+theme_set(theme_light())
 
-means <- apply(mat, 1, mean)
-length(means)
+panderOptions('table.style', 'rmarkdown')
 
-sd(means)
+panderOptions('table.split.table', Inf)
+panderOptions('knitr.auto.asis', FALSE)
 ```
 
-```{r ex1_pipes}
+# Simulations
+
+## The standard error of the mean
+
+What is the variability of the mean of a sample, if we get only a single realization?
+[Simulation](https://leanpub.com/LittleInferenceBook/read#leanpub-auto-simulation-example-1-standard-normals)
+with repeated sample avergaging can answer the question.
+
+Before going to the code, a small recap:
+
+* The sample variance, $S^2$, estimates the population variance, $\sigma^2$.
+* The distribution of the sample variance is centered around $\sigma^2$.
+* The variance of the sample mean is $\sigma^2 / n$.
+
+```{r ex1}
 nsim <- 1000
 n <- 10
+
+set.seed(1)
 
 sim_means <- 
   rep(n, nsim) %>%
   sapply(. %>% rnorm %>% mean)
 
 sim_means_sd <- sim_means %>% sd
+```
+
+```{r ex1_tab, echo = F, results = "asis", dependson = "ex1"}
+tab <- data.frame(method = c("theory: 1 / sqrt(n)", "simulation: sim_means_sd"), sd = c( 1/sqrt(n), sim_means_sd))
+pandoc.table(tab, style = 'rmarkdown')
+```
+
+```{r ex1_hist, dependson = "ex1"}
+ggplot(data.frame(mean = sim_means), aes(mean)) + geom_histogram() + 
+  geom_vline(xintercept = c(-sim_means_sd, sim_means_sd)) 
 ``` 
  
