@@ -9,6 +9,7 @@ Andrey Ziyatdinov
 
 ```r
 library(pander)
+
 library(tidyverse)
 ```
 
@@ -30,6 +31,7 @@ panderOptions('knitr.auto.asis', FALSE)
 ## The standard error of the mean
 
 What is the variability of the mean of a sample, if we get only a single realization?
+(Spoiler: $\sigma^2 / n$.)
 [Simulation](https://leanpub.com/LittleInferenceBook/read#leanpub-auto-simulation-example-1-standard-normals)
 with repeated sample avergaging can answer the question.
 
@@ -49,7 +51,7 @@ set.seed(1)
 sim_means <- 
   rep(n, nsim) %>%
   sapply(. %>% rnorm %>% mean)
-
+  
 sim_means_sd <- sim_means %>% sd
 ```
 
