@@ -71,3 +71,11 @@ ggplot(data.frame(mean = sim_means), aes(mean)) + geom_histogram() +
   geom_vline(xintercept = c(-sim_means_sd, sim_means_sd)) 
 ``` 
  
+## Confidence interval for the mean
+
+We know that the sample mean is a radom variable.
+[The Central Limit Theorem (CLT)](https://leanpub.com/LittleInferenceBook/read#leanpub-auto-the-central-limit-theorem) gives us an idea of its distribution for iid variabels with the increasing sample size.
+
+In short: CLT says that $X^{bar}_n$ is approximately $N(\mu, \sigma^2 / n)$.
+
+

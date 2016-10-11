@@ -69,3 +69,11 @@ ggplot(data.frame(mean = sim_means), aes(mean)) + geom_histogram() +
 
 ![](figures/ex1_hist-1.png) 
  
+## Confidence interval for the mean
+
+We know that the sample mean is a radom variable.
+The Central Limit Theorem (CLT) gives us an idea of its distribution for iid variabels with the increasing sample size.
+
+In short: CLT says that $X^{bar}_n$ is approximately $N(\mu, \sigma^2 / n)$.
+
+
