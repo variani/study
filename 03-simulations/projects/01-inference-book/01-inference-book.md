@@ -72,8 +72,15 @@ ggplot(data.frame(mean = sim_means), aes(mean)) + geom_histogram() +
 ## Confidence interval for the mean
 
 We know that the sample mean is a radom variable.
-The Central Limit Theorem (CLT) gives us an idea of its distribution for iid variabels with the increasing sample size.
+[The Central Limit Theorem (CLT)](https://leanpub.com/LittleInferenceBook/read#leanpub-auto-the-central-limit-theorem) gives us an idea of its distribution for iid variabels with the increasing sample size.
 
-In short: CLT says that $X^{bar}_n$ is approximately $N(\mu, \sigma^2 / n)$.
+In short: CLT says that $\bar{X_n}$ is approximately $N(\mu, \sigma^2 / n)$.
+
+The results is that
+
+$\frac{\bar{X_n} - \mu}{\sigma / \sqrt{n}} = \frac{\mbox{Estimate} - \mbox{Mean of estimate}}{\mbox{Std. Err. of estimate}}$
 
 
+### Confidence intervals of the mean
+
+The formula: $\bar{X_n} \pm Z_{1 - \alpha / 2} \frac{\sigma}{\sqrt{n}}$.
