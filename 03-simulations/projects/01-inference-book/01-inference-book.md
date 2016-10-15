@@ -67,20 +67,114 @@ ggplot(data.frame(mean = sim_means), aes(mean)) + geom_histogram() +
   geom_vline(xintercept = c(-sim_means_sd, sim_means_sd)) 
 ```
 
-![](figures/ex1_hist-1.png) 
+![](figures/ex1_hist-1.png)<!-- -->
  
 ## Confidence interval for the mean
+
+Some references:
+
+* http://www.cyclismo.org/tutorial/R/confidence.html
+* http://stackoverflow.com/questions/15180008/how-to-calculate-the-95-confidence-interval-for-the-slope-in-a-linear-regressio
+
 
 We know that the sample mean is a radom variable.
 [The Central Limit Theorem (CLT)](https://leanpub.com/LittleInferenceBook/read#leanpub-auto-the-central-limit-theorem) gives us an idea of its distribution for iid variabels with the increasing sample size.
 
-In short: CLT says that $\bar{X_n}$ is approximately $N(\mu, \sigma^2 / n)$.
-
-The results is that
+The CLT says:
 
 $\frac{\bar{X_n} - \mu}{\sigma / \sqrt{n}} = \frac{\mbox{Estimate} - \mbox{Mean of estimate}}{\mbox{Std. Err. of estimate}}$
 
+aproaches to a standard normal distribution for large $n$. Note that replacing the standard error by its estimate doesn't change the theorem.
+
+In short: CLT says that $\bar{X_n}$ is approximately $N(\mu, \sigma^2 / n)$.
 
 ### Confidence intervals of the mean
 
 The formula: $\bar{X_n} \pm Z_{1 - \alpha / 2} \frac{\sigma}{\sqrt{n}}$.
+
+For normal distribution:
+
+
+```r
+n <- 100
+x <- rnorm(n)
+
+alpha <- 0.05
+(mean(x) + c(-1, 0, 1) * qnorm(alpha/2) * sd(x) / sqrt(n)) %>% round(2)
+```
+
+```
+[1]  0.16  0.01 -0.15
+```
+
+For binomial distribution ($\mu = \hat{p}$ and $\sigma^2 = \hat{p} (1 - \hat{p})$): 
+
+
+```r
+n <- 100
+k <- 56
+
+p <- k / n
+
+alpha <- 0.05
+(p + c(-1, 0, 1) * qnorm(alpha/2) * sqrt(p * (1 - p)) / sqrt(n)) %>% round(2)
+```
+
+```
+[1] 0.66 0.56 0.46
+```
+
+### Simulation of confidence intervals
+
+One can **not** technicaly sat that the CI contains the parameter with probability, e.g. 95% 
+(Bayesian credibal intervals address this point).
+
+The CIs described an aggregate behavour: the CIs say the percetage of intervals 
+that would include the estimated parameter when repeating the experiment many times.
+
+Simple simulations for binomial data will illustate this notion:
+
+
+```r
+probs <- seq(0.1, 0.9, by = 0.05)
+
+set.seed(1)
+
+simulate_coverage_trial <- function(n, p, alpha = 0.05)
+{
+  x <-  rbinom(n, size = 1, prob = p)
+  phat <- mean(x)
+  
+  d <- qnorm(1 - alpha / 2) * sqrt(phat * (1 - phat) / n)
+  ll <- phat - d
+  ul <- phat + d
+  
+  return(ll < p & ul > p)
+}
+
+simulate_coverage <- function(nsim, n, p, alpha = 0.05)
+{
+  num_cov <- rep(n, nsim) %>%
+    sapply(. %>% simulate_coverage_trial(p, alpha)) %>%
+    sum
+  
+  num_cov / nsim
+}
+
+sim_cov_n20 <- 
+  probs %>%
+  sapply(. %>% simulate_coverage(nsim = 1000, n = 20, .))
+
+sim_cov_n200 <- 
+  probs %>%
+  sapply(. %>% simulate_coverage(nsim = 1000, n = 200, .))
+```
+
+![](figures/plot_bi_cov-1.png)<!-- -->
+
+The bad coverage for the case $n = 20$ demonstrates that 
+the CLT applicability for CIs requires a large sample size.
+
+
+
+
