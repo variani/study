@@ -9,6 +9,7 @@ Andrey Ziyatdinov
 
 ```r
 library(pander)
+library(ggplot2)
 
 library(tidyverse)
 ```
@@ -154,11 +155,11 @@ simulate_coverage_trial <- function(n, p, alpha = 0.05)
 
 simulate_coverage <- function(nsim, n, p, alpha = 0.05)
 {
-  num_cov <- rep(n, nsim) %>%
+  num_cov_sum <- rep(n, nsim) %>%
     sapply(. %>% simulate_coverage_trial(p, alpha)) %>%
     sum
   
-  num_cov / nsim
+  num_cov_sum / nsim # avr among `nsim` repetitions 
 }
 
 sim_cov_n20 <- 
