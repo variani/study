@@ -68,7 +68,7 @@ ggplot(data.frame(mean = sim_means), aes(mean)) + geom_histogram() +
   geom_vline(xintercept = c(-sim_means_sd, sim_means_sd)) 
 ```
 
-![](figures/ex1_hist-1.png)<!-- -->
+![](figures/ex1_hist-1.png) 
  
 ## Confidence interval for the mean
 
@@ -171,11 +171,76 @@ sim_cov_n200 <-
   sapply(. %>% simulate_coverage(nsim = 1000, n = 200, .))
 ```
 
-![](figures/plot_bi_cov-1.png)<!-- -->
+![](figures/plot_bi_cov-1.png) 
 
 The bad coverage for the case $n = 20$ demonstrates that 
 the CLT applicability for CIs requires a large sample size.
 
 
+## T-test
 
+The t-statistics for one-sampe test:
+
+$\frac{\bar{X_n}  - \mu_0}{S / \sqrt{n}}$
+
+
+
+```r
+data(father.son, package = "UsingR")
+x <- with(father.son, sheight - fheight)
+t.test(x)
+```
+
+```
+
+	One Sample t-test
+
+data:  x
+t = 11.789, df = 1077, p-value < 2.2e-16
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 0.8310296 1.1629160
+sample estimates:
+mean of x 
+0.9969728 
+```
+
+Condidence intervals:
+
+
+```r
+alpha <- 0.05
+n <- length(x)
+df <- n - 1
+
+mean(x) + c(-1, 0, 1) * qt(1 - alpha/2, df) * sd(x) / sqrt(n)
+```
+
+```
+[1] 0.8310296 0.9969728 1.1629160
+```
+
+Statistics:
+
+
+```r
+ts <- mean(x) / (sd(x) / sqrt(n))
+# two-tailed test
+2 * pt(ts, df, lower.tail = FALSE)
+```
+
+```
+[1] 2.957226e-30
+```
+
+
+```r
+data_frame(x = c(-15, -5, seq(-3, 3, by = 0.1), 5, 15)) %>%
+  mutate(y = dt(x, df = df)) %>%
+  ggplot(aes(x, y)) + 
+    geom_line() + geom_vline(xintercept = ts, color = "red") +
+    labs(title = paste("Standard t-distribution with df =", df))
+```
+
+![](figures/plot_tdist-1.png) 
 
