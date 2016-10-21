@@ -188,6 +188,7 @@ References
 
 Examples
 
+* http://faculty.wwu.edu/jmcl/Biostat/dbh.ttest.1s
 * http://www.evolutionarystatistics.org/document.pdf
 * http://stats.stackexchange.com/questions/35940/simulation-of-logistic-regression-power-analysis-designed-experiments?noredirect=1&lq=1
 * http://stats.stackexchange.com/questions/62208/simulate-data-for-power-analysis-of-logistic-regression-model-include-covarian
